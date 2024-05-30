@@ -1,11 +1,13 @@
 import React from 'react';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 const Line = ({ onClose, schedule, departureDate, departureTime, arrivalDate, arrivalTime, totalPrice }) => {
     // Function to handle reservation
     const handleReservation = async () => {
         const token = localStorage.getItem('token'); // Retrieve the token from local storage
-        const userId = localStorage.getItem('userId'); // Retrieve the user ID from local storage
+        const decodedToken = jwtDecode(token);
+        const userId = decodedToken.nameid;
 
         // Check if either token or userId is not found
         if (!token || !userId) {

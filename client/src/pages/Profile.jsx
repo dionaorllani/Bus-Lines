@@ -3,19 +3,17 @@ import axios from 'axios';
 import NavBar from '../components/NavBar';
 import { useNavigate } from 'react-router-dom';
 import EditAccount from '../components/EditAccount';
-import Footer from "../components/Footer"
+import Footer from "../components/Footer";
+import { jwtDecode } from 'jwt-decode';
 
 const Profile = () => {
     const [user, setUser] = useState(null);
     const [tickets, setTickets] = useState([]);
-
     const [openEditProfile, setOpenEditProfile] = useState(false);
-
     const navigate = useNavigate();
 
     const cancelTicket = async (ticketId) => {
         try {
-
             await axios.delete(`https://localhost:7264/Ticket/${ticketId}`);
             setTickets(tickets.filter(ticket => ticket.id !== ticketId));
         } catch (error) {
@@ -24,24 +22,23 @@ const Profile = () => {
     };
 
     useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            const userId = decodedToken.nameid;
 
-        const userId = localStorage.getItem('userId');
+            const fetchUserData = async () => {
+                try {
+                    const userResponse = await axios.get(`https://localhost:7264/User/${userId}`);
+                    setUser(userResponse.data);
 
-        const fetchUserData = async () => {
-            try {
-                const userResponse = await axios.get(`https://localhost:7264/User/${localStorage.getItem('userId')}`);
-                setUser(userResponse.data);
+                    const ticketResponse = await axios.get(`https://localhost:7264/Ticket?userId=${userId}`);
+                    setTickets(ticketResponse.data);
+                } catch (error) {
+                    console.error('Error fetching user or ticket data:', error);
+                }
+            };
 
-                const ticketResponse = await axios.get(`https://localhost:7264/Ticket?userId=${localStorage.getItem('userId')}`);
-                setTickets(ticketResponse.data);
-
-            } catch (error) {
-                console.error('Error fetching user or ticket data:', error);
-
-            }
-        };
-
-        if (userId) {
             fetchUserData();
         }
     }, []);
@@ -49,7 +46,7 @@ const Profile = () => {
     const clearStorage = () => {
         localStorage.clear();
         navigate('/');
-    }
+    };
 
     return (
         <>
@@ -65,11 +62,10 @@ const Profile = () => {
                                 </div>
                             </div>
                             <h1 className=' w-[380px] md:w-[680px] lg:w-[750px] mx-auto mt-[100px] text-3xl text-[#3b3b3b] mb-5'>Biletat tuaja:</h1>
-                            {tickets ? (
-
+                            {tickets.length > 0 ? (
                                 <div className="flex flex-col gap-4 justify-center">
                                     {tickets.map((ticket) => (
-                                        <div>
+                                        <div key={ticket.id}>
                                             <div className="bg-white rounded-lg shadow-md overflow-hidden w-[380px] md:w-[680px] lg:w-[750px] mb-2 border-b border-gray-200 mx-auto hover:shadow-2xl">
                                                 <div className="flex items-center px-4 py-2 border-b border-gray-200 justify-between">
                                                     <h3 className="text-lg font-medium text-gray-900 mr-2">
@@ -89,10 +85,10 @@ const Profile = () => {
                                                 </div>
                                                 <div className="flex items-center px-4 py-2">
                                                     <div>
-                                                        <p className="ml-auto  text-sm text-orange-400"> Ulesja Numer: {ticket.seat}</p>
+                                                        <p className="ml-auto text-sm text-orange-400"> Ulesja Numer: {ticket.seat}</p>
                                                         <p className="text-gray-500 text-sm">{ticket.operatorName}</p>
                                                     </div>
-                                                    <button onClick={() => cancelTicket(ticket.id)} className=" text-sm focus:outline-none ml-auto  text-orange-400 hover:text-orange-700">
+                                                    <button onClick={() => cancelTicket(ticket.id)} className=" text-sm focus:outline-none ml-auto text-orange-400 hover:text-orange-700">
                                                         Anulo
                                                     </button>
                                                 </div>
@@ -101,12 +97,12 @@ const Profile = () => {
                                     ))}
                                 </div>
                             ) : (
-                                <h3>You dont have any booked tickets</h3>
+                                <h3>You don't have any booked tickets</h3>
                             )}
                         </div>
                     ) : (
                         <div className="flex w-full mt-[15%] align-middle text-center selection:bg-orange-400 selection:text-white">
-                            <p className='m-auto text-6xl font-bold text-[#3b3b3b] '>Loading...</p>
+                            <p className='m-auto text-6xl font-bold text-[#3b3b3b]'>Loading...</p>
                         </div>
                     )}
                 </div>
@@ -121,4 +117,4 @@ const Profile = () => {
     );
 };
 
-export default Profile; 
+export default Profile;

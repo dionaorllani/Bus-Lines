@@ -3,6 +3,7 @@ import axios from 'axios';
 import BusLogo from "../assets/BusLogo.svg";
 import { Link } from 'react-router-dom';
 import Footer from "../components/Footer";
+import { jwtDecode } from 'jwt-decode';
 
 const LogIn = () => {
     const [mode, setMode] = useState('login');
@@ -29,11 +30,10 @@ const LogIn = () => {
         }
     };
 
-    const handleLoginSuccess = (token, userId, userRole) => {
+    const handleLoginSuccess = (token) => {
         localStorage.setItem('token', token);
-        localStorage.setItem('userId', userId);
-        localStorage.setItem('userRole', userRole);
-        window.location.href = userRole === 1 ? '/admin' : '/';
+        const decode = jwtDecode(token);
+        window.location.href = decode.role === "Admin" ? '/admin' : '/';
     };
 
     const handleSubmit = async (e) => {

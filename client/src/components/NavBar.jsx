@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 const NavBar = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -8,17 +8,27 @@ const NavBar = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const userId = localStorage.getItem('userId');
-        const userRole = localStorage.getItem('userRole');
-        setIsLoggedIn(!!userId); // Set isLoggedIn to true if userId exists
-        setUserRole(userRole);
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const decodedToken = jwtDecode(token);
+                const userId = decodedToken.nameid;
+                const userRole = decodedToken.role;
+                setIsLoggedIn(!!userId); // Set isLoggedIn to true if userId exists
+                setUserRole(userRole);
+            } catch (error) {
+                console.error("Failed to decode token:", error);
+                // Handle invalid token case, if needed
+                setIsLoggedIn(false);
+                setUserRole(null);
+            }
+        }
     }, []);
 
     const handleLogout = () => {
         setIsLoggedIn(false);
-        setUserRole(null); // Reset userRole to null
-        localStorage.removeItem('userId');
-        localStorage.removeItem('userRole');
+        setUserRole(null);
+        localStorage.clear();
         navigate('/');
     };
 
@@ -30,10 +40,10 @@ const NavBar = () => {
                 </div>
             </Link>
             <div className="flex items-center text-offBlack">
-                {userRole === "1" && (
+                {userRole === "Admin" && (
                     <Link to="/admin" className="mr-4 text-medium">Admin Panel</Link>
                 )}
-                {isLoggedIn && userRole !== "0" && (
+                {isLoggedIn && userRole !== "User" && (
                     <span className="mr-4">|</span>
                 )}
                 {isLoggedIn && (
@@ -45,7 +55,7 @@ const NavBar = () => {
                 {isLoggedIn ? (
                     <button onClick={handleLogout} className="mr-4 text-medium">Dil</button>
                 ) : (
-                        <Link to="../authentication" className="mr-4 text-medium">Ky&ccedil;u</Link>
+                    <Link to="../authentication" className="mr-4 text-medium">Ky&ccedil;u</Link>
                 )}
             </div>
         </nav>

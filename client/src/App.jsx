@@ -35,6 +35,20 @@ import NotFound from './pages/NotFound';
 
 const App = () => {
 
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            const currentTime = Date.now() / 1000; // Convert milliseconds to seconds
+
+            if (decodedToken.exp < currentTime) {
+                // Token has expired, clear localStorage and reload the page
+                localStorage.removeItem('token');
+                window.location.reload();
+            }
+        }
+    }, []);
+
   return (
     <>
         <Router>

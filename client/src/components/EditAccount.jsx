@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { jwtDecode } from 'jwt-decode';
 
 const EditAccount = ({ setOpenEditProfile }) => {
     const [userData, setUserData] = useState({});
@@ -8,7 +9,11 @@ const EditAccount = ({ setOpenEditProfile }) => {
 
     const fetchUserData = async () => {
         try {
-            const response = await axios.get(`https://localhost:7264/User/${localStorage.getItem('userId')}`);
+            const token = localStorage.getItem('token');
+            const decodedToken = jwtDecode(token);
+            const userId = decodedToken.nameid;
+
+            const response = await axios.get(`https://localhost:7264/User/${userId}`);
             setUserData(response.data);
         } catch (error) {
             console.error("Error fetching user data:", error);
@@ -17,7 +22,11 @@ const EditAccount = ({ setOpenEditProfile }) => {
 
     const updateUserData = async (updatedUserData) => {
         try {
-            await axios.put(`https://localhost:7264/User/${localStorage.getItem('userId')}`, updatedUserData);
+            const token = localStorage.getItem('token');
+            const decodedToken = jwtDecode(token);
+            const userId = decodedToken.nameid;
+
+            await axios.put(`https://localhost:7264/User/${userId}`, updatedUserData);
             fetchUserData();
             console.log("User data updated successfully");
             setOpenEditProfile(false); // Close the modal after successful update
@@ -27,7 +36,7 @@ const EditAccount = ({ setOpenEditProfile }) => {
     };
 
     useEffect(() => {
-        fetchUserData();
+        fetchUserData();c
     }, []);
 
     const handleInputChange = (event) => {
