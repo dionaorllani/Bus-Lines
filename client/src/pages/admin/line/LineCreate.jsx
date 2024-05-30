@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import NavBar from "../../../components/NavBar";
+import withAuthorization from '../../../HOC/withAuthorization';
 
 const LineCreate = () => {
     const [startCityName, setStartCityName] = useState('');
@@ -36,7 +37,7 @@ const LineCreate = () => {
         setSuccess('');
     };
 
-const handleSubmit = async (event) => {
+    const handleSubmit = async (event) => {
     event.preventDefault();
     if (!startCityName.trim() || !destinationCityName.trim()) {
         setError('Please enter both start and destination city names.');
@@ -125,4 +126,4 @@ const handleSubmit = async (event) => {
     );
 };
 
-export default LineCreate;
+export default withAuthorization(LineCreate, ["Admin"]);

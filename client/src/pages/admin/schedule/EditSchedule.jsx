@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import NavBar from "../../../components/NavBar";
+import withAuthorization from '../../../HOC/withAuthorization';
 
 const EditBusSchedule = () => {
     const { id } = useParams();
@@ -221,4 +222,4 @@ const EditBusSchedule = () => {
     );
 };
 
-export default EditBusSchedule;
+export default withAuthorization(EditBusSchedule, ["Admin"]);

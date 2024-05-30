@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import NavBar from "../../../components/NavBar"
+import withAuthorization from '../../../HOC/withAuthorization';
 
 const CityCreate = () => {
     const [cityName, setCityName] = useState('');
@@ -70,4 +71,4 @@ const CityCreate = () => {
     );
 };
 
-export default CityCreate;
+export default withAuthorization(CityCreate, ["Admin"]);

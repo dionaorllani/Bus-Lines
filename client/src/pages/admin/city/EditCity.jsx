@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import axios from 'axios'; // Import Axios
 import NavBar from "../../../components/NavBar"
+import withAuthorization from '../../../HOC/withAuthorization';
 
 const EditCity = () => {
     const { id } = useParams();
@@ -75,4 +76,4 @@ const EditCity = () => {
     );
 };
 
-export default EditCity;
+export default withAuthorization(EditCity, ["Admin"]);

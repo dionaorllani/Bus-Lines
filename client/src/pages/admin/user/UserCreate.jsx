@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import NavBar from "../../../components/NavBar";
+import withAuthorization from '../../../HOC/withAuthorization';
 
 const UserCreate = () => {
     const [email, setEmail] = useState('');
@@ -164,4 +165,4 @@ const UserCreate = () => {
     );
 };
 
-export default UserCreate;
+export default withAuthorization(UserCreate, ["Admin"]);

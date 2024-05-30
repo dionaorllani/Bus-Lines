@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import NavBar from "../../../components/NavBar";
+import withAuthorization from '../../../HOC/withAuthorization';
+
 
 const ScheduleCreate = () => {
     const [formData, setFormData] = useState({
@@ -256,4 +258,4 @@ const ScheduleCreate = () => {
     );
 };
 
-export default ScheduleCreate;
+export default withAuthorization(ScheduleCreate, ["Admin"]);

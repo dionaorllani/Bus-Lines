@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import NavBar from "../../../components/NavBar";
+import withAuthorization from '../../../HOC/withAuthorization';
+
 
 const BusScheduleList = () => {
     const [busSchedules, setBusSchedules] = useState([]);
@@ -116,4 +118,4 @@ const BusScheduleList = () => {
     );
 };
 
-export default BusScheduleList;
+export default withAuthorization(BusScheduleList, ["Admin"]);

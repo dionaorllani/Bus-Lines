@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import NavBar from "../../../components/NavBar";
+import withAuthorization from '../../../HOC/withAuthorization';
 
 const EditLine = () => {
     const { id } = useParams();
@@ -136,4 +137,4 @@ const EditLine = () => {
     );
 };
 
-export default EditLine;
+export default withAuthorization(EditLine, ["Admin"]);

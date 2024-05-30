@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import NavBar from "../../../components/NavBar";
+import withAuthorization from '../../../HOC/withAuthorization';
 
 const EditTicket = () => {
     const { id } = useParams();
@@ -132,4 +133,4 @@ const EditTicket = () => {
     );
 };
 
-export default EditTicket;
+export default withAuthorization(EditTicket, ["Admin"]);

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import NavBar from "../../../components/NavBar";
+import withAuthorization from '../../../HOC/withAuthorization';
 
 const TicketList = () => {
     const [tickets, setTickets] = useState([]);
@@ -111,4 +112,4 @@ const TicketList = () => {
     );
 };
 
-export default TicketList;
+export default withAuthorization(TicketList, ["Admin"]);

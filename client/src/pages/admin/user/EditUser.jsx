@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import NavBar from "../../../components/NavBar";
+import withAuthorization from '../../../HOC/withAuthorization';
 
 const EditUser = () => {
     const { id } = useParams();
@@ -140,4 +141,4 @@ const EditUser = () => {
     );
 };
 
-export default EditUser;
+export default withAuthorization(EditUser, ["Admin"]);

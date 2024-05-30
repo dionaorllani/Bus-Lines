@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import NavBar from "../../../components/NavBar";
+import withAuthorization from '../../../HOC/withAuthorization';
+
 
 const EditStop = () => {
     const { id } = useParams();
@@ -103,4 +105,4 @@ const EditStop = () => {
     );
 };
 
-export default EditStop;
+export default withAuthorization(EditStop, ["Admin"]);

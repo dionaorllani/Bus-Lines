@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import NavBar from "../../../components/NavBar";
+import withAuthorization from '../../../HOC/withAuthorization';
 
 const OperatorList = () => {
     const [operators, setOperators] = useState([]);
@@ -102,4 +103,4 @@ const OperatorList = () => {
     );
 };
 
-export default OperatorList;
+export default withAuthorization(OperatorList, ["Admin"]);

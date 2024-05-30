@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import NavBar from "../../../components/NavBar";
+import withAuthorization from '../../../HOC/withAuthorization';
 
 const StopList = () => {
     const [stops, setStops] = useState([]);
@@ -105,4 +106,4 @@ const StopList = () => {
 
 };
 
-export default StopList;
+export default withAuthorization(StopList, ["Admin"]);

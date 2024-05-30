@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import NavBar from "../components/NavBar";
+import withAuthorization from '../HOC/withAuthorization';
 
 
 const Admin = () => {
@@ -91,4 +92,4 @@ const Admin = () => {
     );
 }
 
-export default Admin;
+export default withAuthorization(Admin, ["Admin"]);
