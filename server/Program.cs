@@ -57,6 +57,12 @@ builder.Services.AddScoped<IStopService, StopService>();
 // Register JwtService
 builder.Services.AddSingleton<JwtService>();
 
+// Register HttpClient service
+builder.Services.AddHttpClient(); // Adds the IHttpClientFactory and related services to service coll
+
+// Register ChatCompletionService
+builder.Services.AddScoped<IChatCompletionService, ChatCompletionService>();
+
 // Configure JWT authentication
 builder.Services.AddAuthentication(options =>
 {
