@@ -32,22 +32,11 @@ import OperatorCreate from './pages/admin/operator/OperatorCreate'
 import TicketList from './pages/admin/ticket/TicketList'
 import TicketEdit from './pages/admin/ticket/TicketEdit'
 import NotFound from './pages/NotFound';
+import useTokenRefresh from './hooks/useTokenRefresh';
 
 const App = () => {
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            const decodedToken = jwtDecode(token);
-            const currentTime = Date.now() / 1000; // Convert milliseconds to seconds
-
-            if (decodedToken.exp < currentTime) {
-                // Token has expired, clear localStorage and reload the page
-                localStorage.removeItem('token');
-                window.location.reload();
-            }
-        }
-    }, []);
+  useTokenRefresh();
 
   return (
     <>

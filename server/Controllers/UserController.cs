@@ -14,12 +14,10 @@ namespace server.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly JwtService _jwtService;
 
-        public UserController(IUserService userService, JwtService jwtService)
+        public UserController(IUserService userService)
         {
             _userService = userService;
-            _jwtService = jwtService;
         }
 
         [HttpGet]
@@ -37,19 +35,13 @@ namespace server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddUser([FromBody] User user)
+        public async Task<IActionResult> AddUser([FromBody] UserDTO user)
         {
             return await _userService.AddUser(user);
         }
 
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
-        {
-            return await _userService.Login(loginDTO, _jwtService);
-        }
-
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(int id, [FromBody] User user)
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] UserDTO user)
         {
             return await _userService.UpdateUser(id, user);
         }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import axios from 'axios';
 
 const NavBar = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -12,8 +13,8 @@ const NavBar = () => {
         if (token) {
             try {
                 const decodedToken = jwtDecode(token);
-                const userId = decodedToken.nameid;
-                const userRole = decodedToken.role;
+                const userId = decodedToken['http://schemas.yourapp.com/identity/claims/userid'];
+                const userRole = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
                 setIsLoggedIn(!!userId); // Set isLoggedIn to true if userId exists
                 setUserRole(userRole);
             } catch (error) {
@@ -26,10 +27,33 @@ const NavBar = () => {
     }, []);
 
     const handleLogout = () => {
-        setIsLoggedIn(false);
-        setUserRole(null);
-        localStorage.clear();
-        navigate('/');
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('No token found in localStorage');
+            return;
+        }
+
+        // Make a request to revoke the refresh token
+        axios.post(
+            'https://localhost:7264/api/Token/revoke',
+            {},
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        )
+            .then(response => {
+                console.log('Token revoked successfully');
+            })
+            .catch(error => {
+                console.error('Failed to revoke token:', error);
+            });
+
+        // Clear tokens from localStorage and navigate to authentication page
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        navigate('/authentication');
     };
 
     return (

@@ -22,10 +22,10 @@ const Profile = () => {
     };
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token'); // Retrieve the token from local storage
         if (token) {
             const decodedToken = jwtDecode(token);
-            const userId = decodedToken.nameid;
+            const userId = decodedToken['http://schemas.yourapp.com/identity/claims/userid'];
 
             const fetchUserData = async () => {
                 try {
@@ -42,11 +42,6 @@ const Profile = () => {
             fetchUserData();
         }
     }, []);
-
-    const clearStorage = () => {
-        localStorage.clear();
-        navigate('/');
-    };
 
     return (
         <>

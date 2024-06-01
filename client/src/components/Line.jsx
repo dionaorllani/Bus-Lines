@@ -7,7 +7,7 @@ const Line = ({ onClose, schedule, departureDate, departureTime, arrivalDate, ar
     const handleReservation = async () => {
         const token = localStorage.getItem('token'); // Retrieve the token from local storage
         const decodedToken = jwtDecode(token);
-        const userId = decodedToken.nameid;
+        const userId = decodedToken['http://schemas.yourapp.com/identity/claims/userid'];
 
         // Check if either token or userId is not found
         if (!token || !userId) {

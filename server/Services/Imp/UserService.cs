@@ -49,7 +49,7 @@ namespace server.Services
             return await _context.Users.FindAsync(id);
         }
 
-        public async Task<IActionResult> AddUser(User user)
+        public async Task<IActionResult> AddUser(UserDTO user)
         {
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
             if (existingUser != null)
@@ -64,24 +64,12 @@ namespace server.Services
                 user.Role = UserRole.User;
             }
 
-            _context.Users.Add(user);
+            _context.Users.Add(_mapper.Map<User>(user));
             await _context.SaveChangesAsync();
             return new CreatedAtActionResult(nameof(GetUser), "User", new { id = user.Id }, user);
         }
 
-        public async Task<IActionResult> Login(LoginDTO loginDTO, JwtService jwtService)
-        {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginDTO.Email);
-            if (user == null || !PasswordHasher.VerifyPassword(loginDTO.Password, user.Password))
-            {
-                return new UnauthorizedResult();
-            }
-
-            var token = jwtService.GenerateToken(user);
-            return new OkObjectResult(new { token = token, userId = user.Id, userRole = user.Role });
-        }
-
-        public async Task<IActionResult> UpdateUser(int id, User user)
+        public async Task<IActionResult> UpdateUser(int id, UserDTO user)
         {
             var existingUser = await _context.Users.FindAsync(id);
             if (existingUser == null)

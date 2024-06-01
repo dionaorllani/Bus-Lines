@@ -11,7 +11,7 @@ const EditAccount = ({ setOpenEditProfile }) => {
         try {
             const token = localStorage.getItem('token');
             const decodedToken = jwtDecode(token);
-            const userId = decodedToken.nameid;
+            const userId = decodedToken['http://schemas.yourapp.com/identity/claims/userid'];
 
             const response = await axios.get(`https://localhost:7264/User/${userId}`);
             setUserData(response.data);
@@ -24,7 +24,7 @@ const EditAccount = ({ setOpenEditProfile }) => {
         try {
             const token = localStorage.getItem('token');
             const decodedToken = jwtDecode(token);
-            const userId = decodedToken.nameid;
+            const userId = decodedToken['http://schemas.yourapp.com/identity/claims/userid'];
 
             await axios.put(`https://localhost:7264/User/${userId}`, updatedUserData);
             fetchUserData();
@@ -36,7 +36,7 @@ const EditAccount = ({ setOpenEditProfile }) => {
     };
 
     useEffect(() => {
-        fetchUserData();c
+        fetchUserData();
     }, []);
 
     const handleInputChange = (event) => {

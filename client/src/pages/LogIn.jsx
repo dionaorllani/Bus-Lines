@@ -30,18 +30,19 @@ const LogIn = () => {
         }
     };
 
-    const handleLoginSuccess = (token) => {
+    const handleLoginSuccess = (token, refreshToken) => {
         localStorage.setItem('token', token);
+        localStorage.setItem('refreshToken', refreshToken);
         const decode = jwtDecode(token);
-        window.location.href = decode.role === "Admin" ? '/admin' : '/';
+        window.location.href = decode['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] === "Admin" ? '/admin' : '/';
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (mode === 'login') {
             try {
-                const response = await axios.post('https://localhost:7264/user/login', { email, password });
-                handleLoginSuccess(response.data.token, response.data.userId, response.data.userRole);
+                const response = await axios.post('https://localhost:7264/Auth/login', { email, password });
+                handleLoginSuccess(response.data.token, response.data.refreshToken);
             } catch (error) {
                 console.error(error);
                 setMessage("Keni gabuar te dhenat, ju lutem provoni perseri!");

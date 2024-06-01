@@ -6,7 +6,7 @@ const withAuthorization = (WrappedComponent, allowedRoles) => {
         if (accessToken) {
             try {
                 const decode = jwtDecode(accessToken);
-                if (!allowedRoles.includes(decode.role)) {
+                if (!allowedRoles.includes(decode['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'])) {
                     window.location.replace("/accessDenied");
                     return null;
                 }
