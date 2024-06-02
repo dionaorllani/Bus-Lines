@@ -41,6 +41,11 @@ const LogIn = () => {
         window.location.href = decode['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] === "Admin" ? '/admin' : '/';
     };
 
+    const validatePassword = (password) => {
+        const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        return passwordRegex.test(password);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (mode === 'login') {
@@ -54,6 +59,10 @@ const LogIn = () => {
         } else {
             if (createPassword !== repeatPassword) {
                 setMessage("Fjalekalimi nuk perputhet!");
+                return;
+            }
+            if (!validatePassword(createPassword)) {
+                setMessage("Fjalekalimi duhet te permbaje nje shkronje te madhe, nje numer, nje simbol dhe te jete te pakten 8 karaktere!");
                 return;
             }
             const emailExists = await checkExistingEmail(email);

@@ -9,6 +9,9 @@ const EditAccount = ({ setOpenEditProfile }) => {
     const [userData, setUserData] = useState({});
     const [repeatPassword, setRepeatPassword] = useState('');
     const [passwordMismatch, setPasswordMismatch] = useState(false);
+    const [passwordValidationError, setPasswordValidationError] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const fetchUserData = async () => {
         try {
@@ -31,9 +34,14 @@ const EditAccount = ({ setOpenEditProfile }) => {
 
             await axios.put(`https://localhost:7264/User/${userId}`, updatedUserData);
             fetchUserData();
-            console.log("User data updated successfully");
-            setOpenEditProfile(false); // Close the modal after successful update
+            setSuccessMessage("Password updated successfully");
+            setErrorMessage('');
+            setTimeout(() => {
+                setOpenEditProfile(false);
+            }, 2000);
         } catch (error) {
+            setErrorMessage("Error updating user data");
+            setSuccessMessage('');
             console.error("Error updating user data:", error);
         }
     };
@@ -50,19 +58,36 @@ const EditAccount = ({ setOpenEditProfile }) => {
         }));
     };
 
+    const validatePassword = (password) => {
+        const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        return passwordRegex.test(password);
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
-        if (event.target.createpassword.value !== event.target.repeatpassword.value) {
+        setSuccessMessage('');
+        setErrorMessage('');
+
+        const newPassword = event.target.createpassword.value;
+
+        if (newPassword !== repeatPassword) {
             setPasswordMismatch(true);
             return;
         }
+        if (newPassword && !validatePassword(newPassword)) {
+            setPasswordValidationError("Password must contain an uppercase letter, a number, a symbol, and be at least 8 characters long.");
+            return;
+        }
         setPasswordMismatch(false);
+        setPasswordValidationError('');
+
         const updatedUserData = {
             firstName: userData.firstName,
             lastName: userData.lastName,
             email: userData.email,
-            password: event.target.createpassword.value,
+            ...(newPassword && { password: newPassword }),
         };
+
         await updateUserData(updatedUserData);
     };
 
@@ -116,8 +141,11 @@ const EditAccount = ({ setOpenEditProfile }) => {
                         onChange={(e) => setRepeatPassword(e.target.value)}
                     />
                     {passwordMismatch && <p className="text-red-500 text-sm">Passwords do not match.</p>}
+                    {passwordValidationError && <p className="text-red-500 text-sm">{passwordValidationError}</p>}
+                    {successMessage && <p className="text-green-500 text-sm">{successMessage}</p>}
+                    {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
                 </div>
-                <div className="mb-6 flex justify-between text-black  font-semibold">
+                <div className="mb-6 flex justify-between text-black font-semibold">
                     <button className="hover:text-orange-400" type="button" onClick={() => setOpenEditProfile(false)}>Cancel</button>
                     <button className="hover:text-orange-400" type="submit">Save</button>
                 </div>

@@ -117,4 +117,4 @@ const Profile = () => {
     );
 };
 
-export default withAuthorization(Profile, ["Admin", "User"]);
+export default withAuthorization(Profile, ["Admin", "User", "Conductor"]);

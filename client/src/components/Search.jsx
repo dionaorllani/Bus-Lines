@@ -54,7 +54,7 @@ const Search = ({ onSubmit, initialSearchData }) => {
                         <p className="text-gray-400 font-light">Kerko & rezervo bileta te autobusit dhe oferta te udhetimit</p>
                         <form onSubmit={handleSubmit} className="mt-4">
                             <div>
-                                <div className="flex items-center flex-wrap lg:mb-2">
+{/*                                <div className="flex items-center flex-wrap lg:mb-2">
                                     <input
                                         className="w-10 lg:w-10 p-1 rounded-md border border-gray-100 mb-2 lg:mb-0 lg:mr-2"
                                         type="number"
@@ -66,7 +66,7 @@ const Search = ({ onSubmit, initialSearchData }) => {
                                         onChange={handleInputChanges}
                                     />
                                     <p className="lg:ml-2 lg:mr-4 mb-2 lg:mb-0">Numri i udhetareve</p>
-                                </div>
+                                </div>*/}
                                 <div className="flex flex-col lg:flex lg:flex-row mt-2 ">
                                     <select
                                         name="StartCityId"
