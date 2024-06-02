@@ -2,6 +2,8 @@
 using server.DTOs;
 using server.Models;
 using server.Services;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace server.Controllers
 {
@@ -20,7 +22,7 @@ namespace server.Controllers
         public async Task<ActionResult<IEnumerable<StopDTO>>> GetStops()
         {
             var stops = await _stopService.GetStopsAsync();
-            return stops;
+            return Ok(stops);
         }
 
         [HttpGet("{id}")]
@@ -31,7 +33,7 @@ namespace server.Controllers
             {
                 return NotFound();
             }
-            return stop;
+            return Ok(stop);
         }
 
         [HttpPost]

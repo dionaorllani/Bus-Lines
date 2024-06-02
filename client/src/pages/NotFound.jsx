@@ -1,7 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import useTokenRefresh from '../hooks/useTokenRefresh';
+
 
 const NotFound = () => {
+    useTokenRefresh();
+
     return (
         <div className="flex flex-col justify-center items-center h-screen">
             <h2 className="text-6xl text-orange-400 font-extralight mb-4">404 - Not Found</h2>

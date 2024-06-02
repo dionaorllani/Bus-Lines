@@ -31,7 +31,8 @@ namespace server.Services
                         .ThenInclude(bl => bl.StartCity)
                 .Include(t => t.BusSchedule)
                     .ThenInclude(bs => bs.BusLine)
-                        .ThenInclude(bl => bl.DestinationCity);
+                        .ThenInclude(bl => bl.DestinationCity)
+                .Where(t => !t.IsDeleted);
 
             // Filter query by user ID if provided.
             if (userId.HasValue)
@@ -70,7 +71,7 @@ namespace server.Services
                 .Include(t => t.BusSchedule)
                     .ThenInclude(bs => bs.BusLine)
                         .ThenInclude(bl => bl.DestinationCity)
-                .SingleOrDefaultAsync(t => t.Id == id);
+                .FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted);
 
             // If no ticket found, return HTTP 404 Not Found.
             if (ticketData == null)
@@ -161,7 +162,7 @@ namespace server.Services
         {
             // Validate the existing ticket.
             var existingTicket = await _context.Tickets.FindAsync(id);
-            if (existingTicket == null)
+            if (existingTicket == null || existingTicket.IsDeleted)
             {
                 return new NotFoundResult();
             }
@@ -234,18 +235,16 @@ namespace server.Services
         // Deletes a ticket based on its ID.
         public async Task<IActionResult> DeleteTicket(int id)
         {
-            // Find the ticket.
             var ticket = await _context.Tickets.FindAsync(id);
             if (ticket == null)
             {
                 return new NotFoundResult();
             }
 
-            // Remove the ticket from the database.
-            _context.Tickets.Remove(ticket);
+            ticket.IsDeleted = true; // Soft delete
+            _context.Entry(ticket).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            // Return HTTP 204 No Content as the ticket has been successfully deleted.
             return new NoContentResult();
         }
     }

@@ -4,8 +4,11 @@ import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import NavBar from "../../../components/NavBar";
 import withAuthorization from '../../../HOC/withAuthorization';
+import useTokenRefresh from '../../../hooks/useTokenRefresh';
 
 const EditUser = () => {
+    useTokenRefresh();
+
     const { id } = useParams();
     const [user, setUser] = useState({
         firstName: '',

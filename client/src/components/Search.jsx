@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import useTokenRefresh from '../hooks/useTokenRefresh';
 
 const Search = ({ onSubmit, initialSearchData }) => {
+    useTokenRefresh();
+
     const [startCity, setStartCity] = useState(initialSearchData.startCity || "");
     const [destinationCity, setDestinationCity] = useState(initialSearchData.destinationCity || "");
     const [departureTime, setDepartureTime] = useState(initialSearchData.departureTime || "");

@@ -1,8 +1,11 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { jwtDecode } from 'jwt-decode';
+import useTokenRefresh from '../hooks/useTokenRefresh';
 
 const EditAccount = ({ setOpenEditProfile }) => {
+    useTokenRefresh();
+
     const [userData, setUserData] = useState({});
     const [repeatPassword, setRepeatPassword] = useState('');
     const [passwordMismatch, setPasswordMismatch] = useState(false);

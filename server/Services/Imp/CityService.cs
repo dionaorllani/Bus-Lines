@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using server.DataAccess;
 using server.Entities;
 using server.Models;
+using System.Linq;
 
 namespace server.Services.Imp
 {
@@ -17,20 +18,20 @@ namespace server.Services.Imp
 
         public async Task<List<City>> GetCitiesAsync()
         {
-            // Get all cities from the database
-            return await _context.Cities.ToListAsync();
+            // Get all cities that are not deleted
+            return await _context.Cities.Where(c => !c.IsDeleted).ToListAsync();
         }
 
         public async Task<City> GetCityByIdAsync(int id)
         {
-            // Find city by ID
-            return await _context.Cities.FindAsync(id);
+            // Find city by ID that is not deleted
+            return await _context.Cities.FirstOrDefaultAsync(c => c.Id == id && !c.IsDeleted);
         }
 
         public async Task<City> AddCityAsync(CityDTO cityDTO)
         {
-            // Validate if city already exists with the same name
-            var existingCity = await _context.Cities.FirstOrDefaultAsync(c => c.Name == cityDTO.Name);
+            // Validate if city already exists with the same name and is not deleted
+            var existingCity = await _context.Cities.FirstOrDefaultAsync(c => c.Name == cityDTO.Name && !c.IsDeleted);
             if (existingCity != null)
             {
                 throw new ArgumentException("City already exists.");
@@ -39,7 +40,8 @@ namespace server.Services.Imp
             // Create a new City entity from the DTO
             var city = new City
             {
-                Name = cityDTO.Name
+                Name = cityDTO.Name,
+                IsDeleted = false
             };
 
             // Add city to context and save changes
@@ -52,7 +54,7 @@ namespace server.Services.Imp
         public async Task UpdateCityAsync(int id, CityDTO cityDTO)
         {
             // Find city by ID
-            var city = await _context.Cities.FindAsync(id);
+            var city = await _context.Cities.FirstOrDefaultAsync(c => c.Id == id && !c.IsDeleted);
             if (city == null)
             {
                 throw new ArgumentException("City not found.");
@@ -72,14 +74,16 @@ namespace server.Services.Imp
         public async Task DeleteCityAsync(int id)
         {
             // Find city by ID
-            var city = await _context.Cities.FindAsync(id);
+            var city = await _context.Cities.FirstOrDefaultAsync(c => c.Id == id && !c.IsDeleted);
             if (city == null)
             {
                 throw new ArgumentException("City not found.");
             }
 
-            // Remove city from context
-            _context.Cities.Remove(city);
+            // Set IsDeleted to true
+            city.IsDeleted = true;
+            // Mark city as modified in context
+            _context.Entry(city).State = EntityState.Modified;
             // Save changes to the database
             await _context.SaveChangesAsync();
         }

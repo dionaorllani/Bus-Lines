@@ -15,5 +15,7 @@ namespace server.Entities
         public int DestinationCityId { get; set; }
         [ForeignKey("DestinationCityId")]
         public City DestinationCity { get; set; }
+
+        public bool IsDeleted { get; set; } = false;
     }
 }

@@ -18,5 +18,7 @@ namespace server.Entities
         public int Seat { get; set; }
         public DateTime DateOfBooking { get; set; }
 
+        public bool IsDeleted { get; set; } = false;
+
     }
 }

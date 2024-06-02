@@ -21,5 +21,6 @@ namespace server.Entities
         public UserRole Role { get; set; } // Add Role property
         public string? RefreshToken { get; set; }
         public DateTime RefreshTokenExpiryTime { get; set; }
+        public bool IsDeleted { get; set; } = false;
     }
 }

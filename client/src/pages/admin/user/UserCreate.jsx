@@ -3,8 +3,11 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import NavBar from "../../../components/NavBar";
 import withAuthorization from '../../../HOC/withAuthorization';
+import useTokenRefresh from '../../../hooks/useTokenRefresh';
 
 const UserCreate = () => {
+    useTokenRefresh();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [firstName, setFirstName] = useState('');

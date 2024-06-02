@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
+import useTokenRefresh from '../hooks/useTokenRefresh';
 
 const Chat = () => {
+    useTokenRefresh();
+
     const [question, setQuestion] = useState("");
     const [answer, setAnswer] = useState("");
     const [error, setError] = useState(false);

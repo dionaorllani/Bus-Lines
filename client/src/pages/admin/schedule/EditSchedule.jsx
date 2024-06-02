@@ -3,8 +3,11 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import NavBar from "../../../components/NavBar";
 import withAuthorization from '../../../HOC/withAuthorization';
+import useTokenRefresh from '../../../hooks/useTokenRefresh';
 
 const EditBusSchedule = () => {
+    useTokenRefresh();
+
     const { id } = useParams();
     const [busSchedule, setBusSchedule] = useState({
         id: 0,

@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
 import NavBar from "../components/NavBar";
 import withAuthorization from '../HOC/withAuthorization';
-
+import useTokenRefresh from '../hooks/useTokenRefresh';
 
 const Admin = () => {
+    useTokenRefresh();
+
     return (
         <>
             <NavBar />

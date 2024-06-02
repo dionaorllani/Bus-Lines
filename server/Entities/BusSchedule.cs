@@ -1,5 +1,4 @@
-﻿using server.Models;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace server.Entities
 {
@@ -19,6 +18,7 @@ namespace server.Entities
         public DateTime Departure { get; set; }
         public DateTime Arrival { get; set; }
         public double Price { get; set; }
+        public bool IsDeleted { get; set; } = false; // Add IsDeleted property
 
         public ICollection<BusScheduleStop> BusScheduleStops { get; set; }
 

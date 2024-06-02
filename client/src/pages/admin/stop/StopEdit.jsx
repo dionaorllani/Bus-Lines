@@ -4,9 +4,11 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import NavBar from "../../../components/NavBar";
 import withAuthorization from '../../../HOC/withAuthorization';
-
+import useTokenRefresh from '../../../hooks/useTokenRefresh';
 
 const EditStop = () => {
+    useTokenRefresh();
+
     const { id } = useParams();
     const [stop, setStop] = useState({ stationName: '', cityName: '' });
     const [cities, setCities] = useState([]);

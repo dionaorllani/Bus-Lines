@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import NavBar from "../../../components/NavBar";
 import withAuthorization from '../../../HOC/withAuthorization';
+import useTokenRefresh from '../../../hooks/useTokenRefresh';
 
 const LineList = () => {
+    useTokenRefresh();
     const [busLines, setBusLines] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;

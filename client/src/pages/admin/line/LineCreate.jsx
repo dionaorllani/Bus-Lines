@@ -3,8 +3,11 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import NavBar from "../../../components/NavBar";
 import withAuthorization from '../../../HOC/withAuthorization';
+import useTokenRefresh from '../../../hooks/useTokenRefresh';
 
 const LineCreate = () => {
+    useTokenRefresh();
+
     const [startCityName, setStartCityName] = useState('');
     const [destinationCityName, setDestinationCityName] = useState('');
     const [cities, setCities] = useState([]);

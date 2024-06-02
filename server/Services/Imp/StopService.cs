@@ -2,6 +2,9 @@
 using server.DataAccess;
 using server.Entities;
 using server.Models;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace server.Services
 {
@@ -18,6 +21,7 @@ namespace server.Services
         {
             return await _context.Stops
               .Include(s => s.City)
+              .Where(s => !s.IsDeleted)
               .Select(s => new StopDTO
               {
                   Id = s.Id,
@@ -33,11 +37,11 @@ namespace server.Services
             var stop = await _context.Stops
               .Include(s => s.City)
               .Include(s => s.BusScheduleStops)
-              .FirstOrDefaultAsync(s => s.Id == id);
+              .FirstOrDefaultAsync(s => s.Id == id && !s.IsDeleted);
 
             if (stop == null)
             {
-                return null;
+                throw new KeyNotFoundException($"Stop with ID {id} not found.");
             }
 
             return new StopDTO
@@ -52,15 +56,17 @@ namespace server.Services
         public async Task<StopDTO> AddStopAsync(StopPostDTO stopDTO)
         {
             var city = await _context.Cities.FirstOrDefaultAsync(c => c.Name == stopDTO.CityName);
-            if (city == null)
+
+            if (city == null || city.IsDeleted)
             {
-                throw new ArgumentException("City not found");
+                throw new ArgumentException("City not found or has been deleted");
             }
 
             var stop = new Stop
             {
                 CityId = city.Id,
-                StationName = stopDTO.StationName
+                StationName = stopDTO.StationName,
+                IsDeleted = false
             };
 
             _context.Stops.Add(stop);
@@ -76,7 +82,7 @@ namespace server.Services
 
         public async Task UpdateStopAsync(int id, StopPostDTO stopDTO)
         {
-            var existingStop = await _context.Stops.FindAsync(id);
+            var existingStop = await _context.Stops.FirstOrDefaultAsync(s => s.Id == id && !s.IsDeleted);
 
             if (existingStop == null)
             {
@@ -84,7 +90,7 @@ namespace server.Services
             }
 
             var city = await _context.Cities.FirstOrDefaultAsync(c => c.Name == stopDTO.CityName);
-            if (city == null)
+            if (city == null || city.IsDeleted)
             {
                 throw new ArgumentException("City not found for the given CityId");
             }
@@ -97,13 +103,17 @@ namespace server.Services
 
         public async Task DeleteStopAsync(int id)
         {
-            var stop = await _context.Stops.FindAsync(id);
+            var stop = await _context.Stops.FirstOrDefaultAsync(s => s.Id == id && !s.IsDeleted);
             if (stop == null)
             {
                 throw new ArgumentException("Stop not found");
             }
 
-            _context.Stops.Remove(stop);
+            // Set IsDeleted to true
+            stop.IsDeleted = true;
+            // Mark stop as modified in context
+            _context.Entry(stop).State = EntityState.Modified;
+            // Save changes to the database
             await _context.SaveChangesAsync();
         }
     }

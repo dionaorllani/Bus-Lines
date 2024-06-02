@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useTokenRefresh from '../hooks/useTokenRefresh';
 
 // Import images
 import ShkupiLogo from '../assets/Shkupi.png';
@@ -8,6 +9,8 @@ import PrishtinaLogo from '../assets/Prishtina.png';
 import TiranaLogo from '../assets/Tirana.png';
 
 const TravelTo = () => {
+    useTokenRefresh();
+
     const navigate = useNavigate();
     const [startCity, setStartCity] = useState("");
     const [passengerCount, setPassengerCount] = useState(1);

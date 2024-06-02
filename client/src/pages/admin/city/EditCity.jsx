@@ -4,8 +4,11 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios'; // Import Axios
 import NavBar from "../../../components/NavBar"
 import withAuthorization from '../../../HOC/withAuthorization';
+import useTokenRefresh from '../../../hooks/useTokenRefresh';
 
 const EditCity = () => {
+    useTokenRefresh();
+
     const { id } = useParams();
     const [city, setCity] = useState({ name: '' });
 

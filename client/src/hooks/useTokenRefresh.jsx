@@ -28,7 +28,7 @@ const useTokenRefresh = () => {
                         localStorage.removeItem('token');
                         localStorage.removeItem('refreshToken');
                         // Redirect to login page
-                        window.location.reload();
+                        window.location.href = '/authentication';
                     });
             }
         }

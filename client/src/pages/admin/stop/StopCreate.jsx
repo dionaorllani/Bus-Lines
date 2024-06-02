@@ -3,8 +3,11 @@ import axios from 'axios';
 import NavBar from "../../../components/NavBar";
 import { Link } from 'react-router-dom';
 import withAuthorization from '../../../HOC/withAuthorization';
+import useTokenRefresh from '../../../hooks/useTokenRefresh';
 
 const StopCreate = () => {
+    useTokenRefresh();
+
     const [stationName, setStationName] = useState('');
     const [cityName, setCityName] = useState('');
     const [cities, setCities] = useState([]);

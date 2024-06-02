@@ -28,7 +28,7 @@ namespace server.Services
 
         private IQueryable<User> GetUserQuery(string? email = null)
         {
-            IQueryable<User> query = _context.Users;
+            IQueryable<User> query = _context.Users.Where(u => !u.IsDeleted);
 
             if (!string.IsNullOrEmpty(email))
             {
@@ -41,6 +41,10 @@ namespace server.Services
         public async Task<UserDTO> GetUser(int id)
         {
             var user = await GetUserById(id);
+            if (user == null || user.IsDeleted)
+            {
+                return null; // Return null if user not found or is deleted
+            }
             return _mapper.Map<UserDTO>(user);
         }
 
@@ -72,7 +76,7 @@ namespace server.Services
         public async Task<IActionResult> UpdateUser(int id, UserDTO user)
         {
             var existingUser = await _context.Users.FindAsync(id);
-            if (existingUser == null)
+            if (existingUser == null || existingUser.IsDeleted)
             {
                 return new NotFoundResult();
             }
@@ -122,12 +126,16 @@ namespace server.Services
         public async Task<IActionResult> DeleteUser(int id)
         {
             var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            if (user == null || user.IsDeleted)
             {
                 return new NotFoundResult();
             }
 
-            _context.Users.Remove(user);
+            // Set IsDeleted to true
+            user.IsDeleted = true;
+            // Mark city as modified in context
+            _context.Entry(user).State = EntityState.Modified;
+            // Save changes to the database
             await _context.SaveChangesAsync();
 
             return new NoContentResult();

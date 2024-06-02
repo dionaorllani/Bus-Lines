@@ -26,7 +26,8 @@ public class BusScheduleService : IBusScheduleService
                 .ThenInclude(bl => bl.DestinationCity)
             .Include(bs => bs.Operator)
             .Include(bs => bs.BusScheduleStops)
-                .ThenInclude(bss => bss.Stop);
+                .ThenInclude(bss => bss.Stop)
+            .Where(bs => !bs.IsDeleted);
 
         // Apply filters
         if (!string.IsNullOrEmpty(startCityName))
@@ -73,7 +74,7 @@ public class BusScheduleService : IBusScheduleService
             .Include(bs => bs.Operator)
             .Include(bs => bs.BusScheduleStops)
                 .ThenInclude(bss => bss.Stop)
-            .FirstOrDefaultAsync(bs => bs.Id == id);
+            .FirstOrDefaultAsync(bs => bs.Id == id && !bs.IsDeleted);
 
         // Return null if not found
         if (busSchedule == null)
@@ -117,7 +118,7 @@ public class BusScheduleService : IBusScheduleService
 
         // Find operator
         var @operator = await _context.Operators.FirstOrDefaultAsync(op => op.Name == busScheduleDTO.OperatorName);
-        if (@operator == null)
+        if (@operator == null || @operator.IsDeleted)
         {
             throw new KeyNotFoundException("Operator not found.");
         }
@@ -139,7 +140,7 @@ public class BusScheduleService : IBusScheduleService
             foreach (var stationName in busScheduleDTO.StationNames)
             {
                 var stop = await _context.Stops.FirstOrDefaultAsync(s => s.StationName == stationName);
-                if (stop == null)
+                if (stop == null || stop.IsDeleted)
                 {
                     throw new KeyNotFoundException($"Stop with name {stationName} not found.");
                 }
@@ -179,7 +180,7 @@ public class BusScheduleService : IBusScheduleService
                 .ThenInclude(bl => bl.DestinationCity)
             .Include(bs => bs.Operator)
             .Include(bs => bs.BusScheduleStops)
-            .FirstOrDefaultAsync(bs => bs.Id == id);
+            .FirstOrDefaultAsync(bs => bs.Id == id && !bs.IsDeleted);
 
         // Throw exception if not found
         if (existingBusSchedule == null)
@@ -217,7 +218,7 @@ public class BusScheduleService : IBusScheduleService
             existingBusSchedule.Operator.Name != busScheduleDTO.OperatorName)
         {
             var operatorEntity = await _context.Operators.FirstOrDefaultAsync(op => op.Name == busScheduleDTO.OperatorName);
-            if (operatorEntity == null)
+            if (operatorEntity == null || operatorEntity.IsDeleted)
             {
                 throw new KeyNotFoundException("Operator not found.");
             }
@@ -232,7 +233,7 @@ public class BusScheduleService : IBusScheduleService
             foreach (var stationName in busScheduleDTO.StationNames)
             {
                 var stop = await _context.Stops.FirstOrDefaultAsync(s => s.StationName == stationName);
-                if (stop == null)
+                if (stop == null || stop.IsDeleted)
                 {
                     throw new KeyNotFoundException($"Stop with name {stationName} not found.");
                 }
@@ -252,8 +253,10 @@ public class BusScheduleService : IBusScheduleService
         if (busSchedule == null) // Throw exception if not found
             throw new KeyNotFoundException("Bus schedule not found.");
 
-        // Remove the bus schedule
-        _context.BusSchedules.Remove(busSchedule);
+        // Set IsDeleted to true instead of removing
+        busSchedule.IsDeleted = true;
+        // Mark as modified
+        _context.Entry(busSchedule).State = EntityState.Modified;
         // Save changes to context
         await _context.SaveChangesAsync();
     }

@@ -5,8 +5,13 @@ import { useNavigate } from 'react-router-dom';
 import EditAccount from '../components/EditAccount';
 import Footer from "../components/Footer";
 import { jwtDecode } from 'jwt-decode';
+import withAuthorization from '../HOC/withAuthorization';
+import useTokenRefresh from '../hooks/useTokenRefresh';
 
 const Profile = () => {
+
+    useTokenRefresh();
+
     const [user, setUser] = useState(null);
     const [tickets, setTickets] = useState([]);
     const [openEditProfile, setOpenEditProfile] = useState(false);
@@ -112,4 +117,4 @@ const Profile = () => {
     );
 };
 
-export default Profile;
+export default withAuthorization(Profile, ["Admin", "User"]);

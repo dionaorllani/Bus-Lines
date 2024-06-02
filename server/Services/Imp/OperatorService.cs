@@ -17,13 +17,13 @@ namespace server.Services
         public async Task<List<Operator>> GetOperatorsAsync()
         {
             // This method asynchronously retrieves all Operator entities from the database and returns them as a list
-            return await _context.Operators.ToListAsync();
+            return await _context.Operators.Where(c => !c.IsDeleted).ToListAsync();
         }
 
         public async Task<Operator> GetOperatorByIdAsync(int id)
         {
             // This method asynchronously retrieves an Operator entity with the specified id from the database
-            return await _context.Operators.FindAsync(id);
+            return await _context.Operators.FirstOrDefaultAsync(o => o.Id == id && !o.IsDeleted);
         }
 
         public async Task<Operator> AddOperatorAsync(OperatorDTO operatorDTO)
@@ -54,7 +54,7 @@ namespace server.Services
         public async Task UpdateOperatorAsync(int id, OperatorDTO operatorDTO)
         {
             // Finds the Operator entity with the specified id
-            var oper = await _context.Operators.FindAsync(id);
+            var oper = await _context.Operators.FirstOrDefaultAsync(o => o.Id == id && !o.IsDeleted);
             if (oper == null)
             {
                 throw new ArgumentException("Operator not found.");
@@ -75,17 +75,14 @@ namespace server.Services
 
         public async Task DeleteOperatorAsync(int id)
         {
-            // Finds the Operator entity with the specified id
-            var oper = await _context.Operators.FindAsync(id);
+            var oper = await _context.Operators.FirstOrDefaultAsync(o => o.Id == id && !o.IsDeleted);
             if (oper == null)
             {
                 throw new ArgumentException("Operator not found.");
             }
 
-            // Removes the Operator entity from the database context
-            _context.Operators.Remove(oper);
-
-            // Saves the changes to the database asynchronously
+            oper.IsDeleted = true;
+            _context.Entry(oper).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
     }

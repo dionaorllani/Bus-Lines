@@ -1,6 +1,9 @@
 import React from 'react';
+import useTokenRefresh from '../hooks/useTokenRefresh';
 
 const Video = () => {
+    useTokenRefresh();
+
     return (
         <>
             <h2 className="text-3xl text-black font-extralight text-center mt-20 mb-8">Stacioni i autobus&#235;ve, Prishtin&#235;</h2>

@@ -4,9 +4,13 @@ import { useLocation } from 'react-router-dom';
 import NavBar from "../components/NavBar";
 import Line from '../components/Line';
 import Footer from "../components/Footer";
-import Search from '../components/Search'; // Make sure to create this component
+import Search from '../components/Search'; 
+import useTokenRefresh from '../hooks/useTokenRefresh';
 
 const Lines = () => {
+
+    useTokenRefresh();
+
     const location = useLocation();
     const searchParams = location.state || {};
     const [searchData, setSearchData] = useState({

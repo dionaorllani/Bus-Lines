@@ -44,7 +44,7 @@ namespace server.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message); // Handle exceptions more gracefully in a real application
+                return BadRequest(ex.Message);
             }
         }
 

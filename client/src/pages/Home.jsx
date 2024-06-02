@@ -5,7 +5,12 @@ import Video from "../components/Video"
 import Footer from "../components/Footer"
 import Chat from "../components/Chat";
 import { useNavigate } from 'react-router-dom';
+import useTokenRefresh from '../hooks/useTokenRefresh';
+
 const Home = () => {
+
+    useTokenRefresh();
+
     const navigate = useNavigate();
 
     const handleFormSubmit = (searchData) => {

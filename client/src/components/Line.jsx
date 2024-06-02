@@ -1,8 +1,11 @@
 import React from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+import useTokenRefresh from '../hooks/useTokenRefresh';
 
 const Line = ({ onClose, schedule, departureDate, departureTime, arrivalDate, arrivalTime, totalPrice }) => {
+    useTokenRefresh();
+
     // Function to handle reservation
     const handleReservation = async () => {
         const token = localStorage.getItem('token'); // Retrieve the token from local storage

@@ -2,8 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
+import useTokenRefresh from '../hooks/useTokenRefresh';
 
 const NavBar = () => {
+    useTokenRefresh();
+
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userRole, setUserRole] = useState(null);
     const navigate = useNavigate();

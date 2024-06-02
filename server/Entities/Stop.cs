@@ -1,5 +1,6 @@
 ﻿using server.Models;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.Generic;
 
 namespace server.Entities
 {
@@ -14,5 +15,8 @@ namespace server.Entities
 
         //Navigation property for many-to-many relationship with BusSchedules
         public ICollection<BusScheduleStop> BusScheduleStops { get; set; }
+
+        // Soft delete property
+        public bool IsDeleted { get; set; } = false;
     }
 }

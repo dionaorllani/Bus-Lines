@@ -4,8 +4,12 @@ import BusLogo from "../assets/BusLogo.svg";
 import { Link } from 'react-router-dom';
 import Footer from "../components/Footer";
 import { jwtDecode } from 'jwt-decode';
+import useTokenRefresh from '../hooks/useTokenRefresh';
 
 const LogIn = () => {
+
+    useTokenRefresh();
+
     const [mode, setMode] = useState('login');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
