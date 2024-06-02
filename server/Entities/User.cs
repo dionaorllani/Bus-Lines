@@ -6,7 +6,8 @@ namespace server.Entities
     public enum UserRole
     {
         User = 0,
-        Admin = 1
+        Admin = 1,
+        Conductor = 2
     }
 
     public class User

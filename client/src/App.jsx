@@ -33,6 +33,11 @@ import NotFound from './pages/NotFound';
 import useTokenRefresh from './hooks/useTokenRefresh';
 import QuestionList from './pages/admin/question/QuestionList';
 import EditQuestion from './pages/admin/question/EditQuestion';
+import Conductor from './pages/Conductor';
+import TicketListConductor from './pages/conductor/ticket/TicketListConductor';
+import TicketEditConductor from './pages/conductor/ticket/TicketEditConductor';
+import UserListConductor from './pages/conductor/user/UserListConductor';
+import ScheduleListConductor from './pages/conductor/schedules/ScheduleListConductor';
 
 const App = () => {
 
@@ -71,6 +76,11 @@ const App = () => {
             <Route path="*" element={<Navigate replace to="/not-found" />} />
             <Route path="/admin/questions" element={<QuestionList />} />
             <Route path="/admin/questions/:id/edit" element={<EditQuestion />} />
+            <Route path="/conductor" element={<Conductor />} />
+            <Route path="/conductor/tickets/" element={<TicketListConductor />} />
+            <Route path="/conductor/tickets/:id/edit" element={<TicketEditConductor />} />
+            <Route path="/conductor/users/" element={<UserListConductor />} />
+            <Route path="/conductor/schedules/" element={<ScheduleListConductor />} />
           </Routes>
         </Router>
     </>

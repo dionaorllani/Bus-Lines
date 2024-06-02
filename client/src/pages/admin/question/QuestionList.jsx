@@ -2,8 +2,11 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import NavBar from "../../../components/NavBar";
 import { Link } from 'react-router-dom';
+import useTokenRefresh from '../../../hooks/useTokenRefresh';
 
 const QuestionList = () => {
+    useTokenRefresh();
+
     const [userQuestions, setUserQuestions] = useState([]);
 
     useEffect(() => {
@@ -37,6 +40,12 @@ const QuestionList = () => {
                 <div className="bg-white shadow-md rounded-xl my-6">
                     <div className="flex justify-between items-center border-b border-gray-200 p-6">
                         <h2 className="text-xl font-bold text-gray-700">User Questions List</h2>
+                        <Link
+                            to="/admin"
+                            className="bg-gray-400 text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-gray-400 hover:bg-gray-500 ml-2"
+                        >
+                            Back
+                        </Link>
                     </div>
                     <div className="w-full overflow-x-auto">
                         <table className="w-full whitespace-no-wrap">

@@ -70,6 +70,9 @@ const NavBar = () => {
                 {userRole === "Admin" && (
                     <Link to="/admin" className="mr-4 text-medium">Admin Panel</Link>
                 )}
+                {userRole === "Conductor" && (
+                    <Link to="/conductor" className="mr-4 text-medium">Conductor Panel</Link>
+                )}
                 {isLoggedIn && userRole !== "User" && (
                     <span className="mr-4">|</span>
                 )}
