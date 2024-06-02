@@ -86,6 +86,17 @@ const Admin = () => {
                             </Link>
                         </div>
                     </div>
+                    <div className="flex-col flex items-center px-16 py-6 bg-white shadow-md rounded-md p-6">
+                        <h3 className="text-xl font-semibold mb-2">Questions</h3>
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-3xl font-bold"></h2>
+                            <Link to="/admin/questions">
+                                <button className="text-orange-400 hover:text-white border border-orange-400 hover:bg-orange-400 focus:ring-4 focus:outline-none focus:ring-orange-400 font-medium rounded-lg text-sm text-center flex-grow dark:border-orange-400 dark:text-orange-400 dark:hover:text-white dark:hover:bg-orange-400 dark:focus:ring-orange-900 mt-2 p-1 rounded-md w-20">
+                                    See All
+                                </button>
+                            </Link>
+                        </div>
+                    </div>
                 </div>
             </div>
         </>

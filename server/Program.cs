@@ -62,7 +62,15 @@ builder.Services.AddCors(options =>
 
 // Configure Database Connection
 builder.Services.AddDbContext<BusDbContext>(options =>
-options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+
+// Register MongoDbContext
+builder.Services.AddSingleton<MongoDbContext>(sp =>
+{
+    var connectionString = configuration["MongoDB:ConnectionString"];
+    var databaseName = configuration["MongoDB:DatabaseName"];
+    return new MongoDbContext(connectionString, databaseName);
+});
 
 //Register BusLineService
 builder.Services.AddScoped<IBusLineService, BusLineService>();

@@ -1,6 +1,4 @@
-import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
 
 // Import Style
 import './index.css';
@@ -33,6 +31,7 @@ import TicketList from './pages/admin/ticket/TicketList'
 import TicketEdit from './pages/admin/ticket/TicketEdit'
 import NotFound from './pages/NotFound';
 import useTokenRefresh from './hooks/useTokenRefresh';
+import QuestionList from './pages/admin/question/QuestionList';
 
 const App = () => {
 
@@ -69,6 +68,7 @@ const App = () => {
             <Route path="/admin/tickets/:id/edit" element={<TicketEdit />} />
             <Route path="/not-found" element={<NotFound />}></Route>
             <Route path="*" element={<Navigate replace to="/not-found" />} />
+            <Route path="/admin/questions" element={<QuestionList />} />
           </Routes>
         </Router>
     </>
