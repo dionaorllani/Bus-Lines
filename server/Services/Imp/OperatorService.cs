@@ -28,26 +28,35 @@ namespace server.Services
 
         public async Task<Operator> AddOperatorAsync(OperatorDTO operatorDTO)
         {
-            // Checks if an Operator with the same name already exists
-            var existingOperator = await _context.Operators.FirstOrDefaultAsync(c => c.Name == operatorDTO.Name);
-            if (existingOperator != null)
+            // Check if operator already exists with the same name
+            var existingOperator = await _context.Operators.FirstOrDefaultAsync(o => o.Name == operatorDTO.Name);
+
+            // If operator exists and is not deleted, throw an exception
+            if (existingOperator != null && !existingOperator.IsDeleted)
             {
                 throw new ArgumentException("Operator already exists.");
             }
 
-            // Creates a new Operator instance from the DTO
+            // If operator exists and is deleted, update IsDeleted to false
+            if (existingOperator != null && existingOperator.IsDeleted)
+            {
+                existingOperator.IsDeleted = false;
+                await _context.SaveChangesAsync();
+                return existingOperator;
+            }
+
+            // If operator does not exist, create a new Operator entity from the DTO
             var oper = new Operator
             {
-                Name = operatorDTO.Name
+                Name = operatorDTO.Name,
+                IsDeleted = false
             };
 
-            // Adds the new Operator entity to the database context
+            // Add operator to context and save changes
             _context.Operators.Add(oper);
-
-            // Saves the changes to the database asynchronously
             await _context.SaveChangesAsync();
 
-            // Returns the newly added Operator entity
+            // Return the newly created operator
             return oper;
         }
 

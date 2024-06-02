@@ -54,16 +54,27 @@ namespace server.Services
 
         public async Task<BusLine> AddBusLineAsync(BusLineDTO busLineDTO)
         {
+            // Check if bus line already exists with the same start and destination city
             var existingBusLine = await _context.BusLines
                 .Include(bl => bl.StartCity)
                 .Include(bl => bl.DestinationCity)
-                .FirstOrDefaultAsync(bl => bl.StartCity.Name == busLineDTO.StartCityName && bl.DestinationCity.Name == busLineDTO.DestinationCityName && !bl.IsDeleted);
+                .FirstOrDefaultAsync(bl => bl.StartCity.Name == busLineDTO.StartCityName && bl.DestinationCity.Name == busLineDTO.DestinationCityName);
 
-            if (existingBusLine != null)
+            // If bus line exists and is not deleted, throw an exception
+            if (existingBusLine != null && !existingBusLine.IsDeleted)
             {
                 throw new ArgumentException("Bus line with the same start and destination city already exists.");
             }
 
+            // If bus line exists and is deleted, update IsDeleted to false
+            if (existingBusLine != null && existingBusLine.IsDeleted)
+            {
+                existingBusLine.IsDeleted = false;
+                await _context.SaveChangesAsync();
+                return existingBusLine;
+            }
+
+            // Validate start and destination cities
             var startCity = await _context.Cities.FirstOrDefaultAsync(c => c.Name == busLineDTO.StartCityName && !c.IsDeleted);
             var destinationCity = await _context.Cities.FirstOrDefaultAsync(c => c.Name == busLineDTO.DestinationCityName && !c.IsDeleted);
 
@@ -72,6 +83,7 @@ namespace server.Services
                 throw new ArgumentException("Invalid start city or destination city name, or the city has been deleted.");
             }
 
+            // If bus line does not exist, create a new BusLine entity from the DTO
             var busLine = new BusLine
             {
                 StartCityId = startCity.Id,
@@ -79,9 +91,11 @@ namespace server.Services
                 IsDeleted = false
             };
 
+            // Add bus line to context and save changes
             _context.BusLines.Add(busLine);
             await _context.SaveChangesAsync();
 
+            // Return the newly created bus line
             return busLine;
         }
 

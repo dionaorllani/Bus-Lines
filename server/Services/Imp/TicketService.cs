@@ -103,21 +103,21 @@ namespace server.Services
         {
             // Validate the user exists.
             var user = await _context.Users.FindAsync(ticketDTO.UserId);
-            if (user == null)
+            if (user == null || user.IsDeleted)
             {
                 return new BadRequestObjectResult("User not found.");
             }
 
             // Validate the bus schedule exists.
             var busSchedule = await _context.BusSchedules.FindAsync(ticketDTO.BusScheduleId);
-            if (busSchedule == null)
+            if (busSchedule == null || busSchedule.IsDeleted)
             {
                 return new BadRequestObjectResult("Bus schedule not found.");
             }
 
             // Validate there are available seats.
             var bookedSeats = await _context.Tickets
-                .Where(t => t.BusScheduleId == ticketDTO.BusScheduleId)
+                .Where(t => t.BusScheduleId == ticketDTO.BusScheduleId && !t.IsDeleted)
                 .Select(t => t.Seat)
                 .ToListAsync();
 
@@ -127,25 +127,49 @@ namespace server.Services
                 return new BadRequestObjectResult("No seats left for this bus schedule.");
             }
 
-            // Assign a random available seat.
-            var random = new Random();
-            var randomSeatIndex = random.Next(availableSeats.Count);
-            var selectedSeat = availableSeats[randomSeatIndex];
+            // Check if the ticket already exists
+            var existingTicket = await _context.Tickets
+                .FirstOrDefaultAsync(t => t.UserId == ticketDTO.UserId && t.BusScheduleId == ticketDTO.BusScheduleId);
 
-            // Create and add new ticket.
+            // If the ticket exists and is deleted, update IsDeleted to false and reassign the seat
+            if (existingTicket != null && existingTicket.IsDeleted)
+            {
+                var random = new Random();
+                var randomSeatIndex = random.Next(availableSeats.Count);
+                var selectedSeat = availableSeats[randomSeatIndex];
+
+                existingTicket.IsDeleted = false;
+                existingTicket.Seat = selectedSeat;
+                existingTicket.DateOfBooking = DateTime.Now;
+                await _context.SaveChangesAsync();
+
+                var response = new
+                {
+                    id = existingTicket.Id,
+                    userId = existingTicket.UserId,
+                    busScheduleId = existingTicket.BusScheduleId,
+                    seat = existingTicket.Seat,
+                    dateOfBooking = existingTicket.DateOfBooking
+                };
+
+                return new OkObjectResult(response);
+            }
+
+            // If the ticket does not exist, create and add new ticket.
             var ticket = new Ticket
             {
                 UserId = ticketDTO.UserId,
                 BusScheduleId = ticketDTO.BusScheduleId,
-                Seat = selectedSeat,
-                DateOfBooking = DateTime.Now // Assuming current date/time for booking
+                Seat = availableSeats.First(), // Assign the first available seat
+                DateOfBooking = DateTime.Now, // Assuming current date/time for booking
+                IsDeleted = false
             };
 
             _context.Tickets.Add(ticket);
             await _context.SaveChangesAsync();
 
             // Construct and return the response.
-            var response = new
+            var newResponse = new
             {
                 id = ticket.Id,
                 userId = ticket.UserId,
@@ -154,7 +178,7 @@ namespace server.Services
                 dateOfBooking = ticket.DateOfBooking
             };
 
-            return new CreatedAtActionResult(nameof(GetTicket), "Ticket", new { id = ticket.Id }, response);
+            return new CreatedAtActionResult(nameof(GetTicket), "Ticket", new { id = ticket.Id }, newResponse);
         }
 
         // Updates an existing ticket.

@@ -41,7 +41,7 @@ namespace server.Services
 
             if (stop == null)
             {
-                throw new KeyNotFoundException($"Stop with ID {id} not found.");
+                return null;
             }
 
             return new StopDTO
@@ -55,13 +55,37 @@ namespace server.Services
 
         public async Task<StopDTO> AddStopAsync(StopPostDTO stopDTO)
         {
+            // Check if the city exists and is not deleted
             var city = await _context.Cities.FirstOrDefaultAsync(c => c.Name == stopDTO.CityName);
-
             if (city == null || city.IsDeleted)
             {
                 throw new ArgumentException("City not found or has been deleted");
             }
 
+            // Check if the stop already exists with the same StationName
+            var existingStop = await _context.Stops.FirstOrDefaultAsync(s => s.StationName == stopDTO.StationName && s.CityId == city.Id);
+
+            // If stop exists and is not deleted, throw an exception
+            if (existingStop != null && !existingStop.IsDeleted)
+            {
+                throw new ArgumentException("Stop already exists.");
+            }
+
+            // If stop exists and is deleted, update IsDeleted to false
+            if (existingStop != null && existingStop.IsDeleted)
+            {
+                existingStop.IsDeleted = false;
+                await _context.SaveChangesAsync();
+
+                return new StopDTO
+                {
+                    Id = existingStop.Id,
+                    StationName = existingStop.StationName,
+                    CityName = city.Name
+                };
+            }
+
+            // If stop does not exist, create a new Stop entity from the DTO
             var stop = new Stop
             {
                 CityId = city.Id,
@@ -69,6 +93,7 @@ namespace server.Services
                 IsDeleted = false
             };
 
+            // Add stop to context and save changes
             _context.Stops.Add(stop);
             await _context.SaveChangesAsync();
 

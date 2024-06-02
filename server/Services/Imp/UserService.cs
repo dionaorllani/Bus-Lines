@@ -55,12 +55,35 @@ namespace server.Services
 
         public async Task<IActionResult> AddUser(UserDTO user)
         {
+            // Check if user already exists with the same email
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
-            if (existingUser != null)
+
+            // If user exists and is not deleted, return a conflict result
+            if (existingUser != null && !existingUser.IsDeleted)
             {
                 return new ConflictObjectResult("User already exists.");
             }
 
+            // If user exists and is deleted, update IsDeleted to false and other details
+            if (existingUser != null && existingUser.IsDeleted)
+            {
+                existingUser.IsDeleted = false;
+                existingUser.Password = PasswordHasher.HashPassword(user.Password);
+
+                if (Enum.IsDefined(typeof(UserRole), user.Role))
+                {
+                    existingUser.Role = user.Role;
+                }
+                else
+                {
+                    existingUser.Role = UserRole.User;
+                }
+
+                await _context.SaveChangesAsync();
+                return new OkObjectResult(existingUser);
+            }
+
+            // If user does not exist, create a new User entity from the DTO
             user.Password = PasswordHasher.HashPassword(user.Password);
 
             if (!Enum.IsDefined(typeof(UserRole), user.Role))
@@ -68,9 +91,11 @@ namespace server.Services
                 user.Role = UserRole.User;
             }
 
-            _context.Users.Add(_mapper.Map<User>(user));
+            var newUser = _mapper.Map<User>(user);
+            _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
-            return new CreatedAtActionResult(nameof(GetUser), "User", new { id = user.Id }, user);
+
+            return new CreatedAtActionResult(nameof(GetUser), "User", new { id = newUser.Id }, newUser);
         }
 
         public async Task<IActionResult> UpdateUser(int id, UserDTO user)

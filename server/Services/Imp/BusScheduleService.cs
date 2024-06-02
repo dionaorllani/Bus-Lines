@@ -123,7 +123,37 @@ public class BusScheduleService : IBusScheduleService
             throw new KeyNotFoundException("Operator not found.");
         }
 
-        // Create new bus schedule entity
+        // Check if the bus schedule already exists and is marked as deleted
+        var existingBusSchedule = await _context.BusSchedules
+            .Include(bs => bs.BusScheduleStops)
+            .FirstOrDefaultAsync(bs =>
+                bs.BusLineId == busLine.Id &&
+                bs.OperatorId == @operator.Id &&
+                bs.Departure == busScheduleDTO.Departure &&
+                bs.Arrival == busScheduleDTO.Arrival &&
+                bs.Price == busScheduleDTO.Price &&
+                bs.IsDeleted);
+
+        // If existing bus schedule is found and is deleted, update IsDeleted to false
+        if (existingBusSchedule != null)
+        {
+            existingBusSchedule.IsDeleted = false;
+            await _context.SaveChangesAsync();
+
+            return new BusScheduleDTO
+            {
+                Id = existingBusSchedule.Id,
+                StartCityName = busLine.StartCity.Name,
+                DestinationCityName = busLine.DestinationCity.Name,
+                OperatorName = @operator.Name,
+                Departure = existingBusSchedule.Departure,
+                Arrival = existingBusSchedule.Arrival,
+                Price = existingBusSchedule.Price,
+                StationNames = busScheduleDTO.StationNames
+            };
+        }
+
+        // Create new bus schedule entity if it doesn't already exist
         var busSchedule = new BusSchedule
         {
             BusLineId = busLine.Id,
@@ -131,7 +161,8 @@ public class BusScheduleService : IBusScheduleService
             Departure = busScheduleDTO.Departure,
             Arrival = busScheduleDTO.Arrival,
             Price = busScheduleDTO.Price,
-            BusScheduleStops = new List<BusScheduleStop>()
+            BusScheduleStops = new List<BusScheduleStop>(),
+            IsDeleted = false
         };
 
         // Add stops if station names provided
