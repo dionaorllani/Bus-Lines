@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import NavBar from "../../../components/NavBar";
+import { Link } from 'react-router-dom';
+
 const QuestionList = () => {
     const [userQuestions, setUserQuestions] = useState([]);
 
@@ -17,6 +19,17 @@ const QuestionList = () => {
         fetchUserQuestions();
     }, []);
 
+    const deleteQuestion = async (id) => {
+        try {
+            await axios.delete(`https://localhost:7264/ChatCompletion/questions/${id}`);
+            // After deletion, fetch the updated list of questions
+            const response = await axios.get('https://localhost:7264/ChatCompletion/questions');
+            setUserQuestions(response.data);
+        } catch (error) {
+            console.error('Error deleting question:', error);
+        }
+    };
+
     return (
         <>
             <NavBar />
@@ -32,6 +45,7 @@ const QuestionList = () => {
                                     <th className="px-6 py-3 bg-gray-100 text-gray-600">ID</th>
                                     <th className="px-6 py-3 bg-gray-100 text-gray-600">Question</th>
                                     <th className="px-6 py-3 bg-gray-100 text-gray-600">Asked At</th>
+                                    <th className="px-6 py-3 bg-gray-100 text-gray-600">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
@@ -40,6 +54,14 @@ const QuestionList = () => {
                                         <td className="px-6 py-4">{question.id}</td>
                                         <td className="px-6 py-4">{question.question}</td>
                                         <td className="px-6 py-4">{question.askedAt}</td>
+                                        <td className="px-6 py-4">
+                                            <button onClick={() => deleteQuestion(question.id)} className="text-red-600 hover:text-red-900">
+                                                Delete
+                                            </button>
+                                            <Link to={`/admin/questions/${question.id}/edit`} className="text-blue-600 hover:text-blue-900 ml-10">
+                                                Edit
+                                            </Link>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>

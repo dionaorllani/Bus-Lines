@@ -45,5 +45,56 @@ namespace OpenAI_ChatGPT.Controllers
             var userQuestions = await _mongoDbContext.UserQuestions.Find(_ => true).ToListAsync();
             return Ok(userQuestions);
         }
+
+        [HttpGet("questions/{id}")]
+        public async Task<IActionResult> GetUserQuestion(string id)
+        {
+            var userQuestion = await _mongoDbContext.UserQuestions.Find(uq => uq.Id == id).FirstOrDefaultAsync();
+            if (userQuestion == null)
+                return NotFound("User question not found");
+
+            return Ok(userQuestion);
+        }
+
+        [HttpPut("questions/{id}")]
+        public async Task<IActionResult> UpdateUserQuestion(string id, [FromBody] UserQuestion userQuestion)
+        {
+            try
+            {
+                var filter = Builders<UserQuestion>.Filter.Eq(uq => uq.Id, id);
+                var update = Builders<UserQuestion>.Update
+                    .Set(uq => uq.Question, userQuestion.Question)
+                    .Set(uq => uq.AskedAt, userQuestion.AskedAt);
+
+                var result = await _mongoDbContext.UserQuestions.UpdateOneAsync(filter, update);
+
+                if (result.ModifiedCount == 0)
+                    return NotFound("User question not found");
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpDelete("questions/{id}")]
+        public async Task<IActionResult> DeleteUserQuestion(string id)
+        {
+            try
+            {
+                var result = await _mongoDbContext.UserQuestions.DeleteOneAsync(uq => uq.Id == id);
+
+                if (result.DeletedCount == 0)
+                    return NotFound("User question not found");
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }

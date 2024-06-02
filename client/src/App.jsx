@@ -32,6 +32,7 @@ import TicketEdit from './pages/admin/ticket/TicketEdit'
 import NotFound from './pages/NotFound';
 import useTokenRefresh from './hooks/useTokenRefresh';
 import QuestionList from './pages/admin/question/QuestionList';
+import EditQuestion from './pages/admin/question/EditQuestion';
 
 const App = () => {
 
@@ -69,6 +70,7 @@ const App = () => {
             <Route path="/not-found" element={<NotFound />}></Route>
             <Route path="*" element={<Navigate replace to="/not-found" />} />
             <Route path="/admin/questions" element={<QuestionList />} />
+            <Route path="/admin/questions/:id/edit" element={<EditQuestion />} />
           </Routes>
         </Router>
     </>
