@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using server.Models;
 using server.Services;
@@ -33,6 +34,7 @@ namespace server.Controllers
             return Ok(city);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddCity([FromBody] CityDTO cityDTO)
         {
@@ -47,6 +49,7 @@ namespace server.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCity(int id, [FromBody] CityDTO cityDTO)
         {
@@ -61,6 +64,7 @@ namespace server.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCity(int id)
         {

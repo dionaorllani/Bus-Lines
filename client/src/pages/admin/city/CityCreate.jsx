@@ -3,10 +3,8 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import NavBar from "../../../components/NavBar"
 import withAuthorization from '../../../HOC/withAuthorization';
-import useTokenRefresh from '../../../hooks/useTokenRefresh';
 
 const CityCreate = () => {
-    useTokenRefresh();
 
     const [cityName, setCityName] = useState('');
     const [error, setError] = useState('');
@@ -18,22 +16,58 @@ const CityCreate = () => {
         setSuccess('');
     };
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
+    const handleSubmit = async () => {
+        const token = localStorage.getItem("token");
         if (!cityName.trim()) {
             setError('Please enter a city name.');
             return;
         }
         try {
-            const response = await axios.post('https://localhost:7264/City', { name: cityName });
-            setSuccess(`City "${response.data.name}" added successfully.`);
-            setCityName('');
-            setError('');
+            await addCity(token);
         } catch (error) {
-            setError('Error adding city. Please try again.');
-            console.error('Error adding city:', error);
+            const refreshToken = localStorage.getItem('refreshToken');
+            if (refreshToken) {
+                try {
+                    const refreshResponse = await axios.post(
+                        'https://localhost:7264/api/Token/refresh',
+                        {
+                            accessToken: token,
+                            refreshToken: refreshToken
+                        }
+                    );
+                    const newAccessToken = refreshResponse.data.token;
+                    localStorage.setItem('token', newAccessToken);
+                    // Retry adding the city with the new token
+                    await addCity(newAccessToken);
+                    console.log(45)
+                } catch (refreshError) {
+                    if (refreshError.response && refreshError.response.status === 400) {
+                        window.location.href = '/authentication';
+                    } else {
+                        setError('Error refreshing token. Please try again.');
+                        console.error('Error refreshing token:', refreshError);
+                    }
+                }
+            } else {
+                window.location.href = '/authentication';
+            }
         }
     };
+
+    const addCity = async (token) => {
+        const response = await axios.post(
+            'https://localhost:7264/City',
+            {
+                name: cityName
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+        setSuccess(`City "${response.data.name}" added successfully.`);
+     };
 
     return (
         <>
