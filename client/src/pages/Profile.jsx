@@ -88,9 +88,6 @@ const Profile = () => {
                                                         <p className="ml-auto text-sm text-orange-400"> Ulesja Numer: {ticket.seat}</p>
                                                         <p className="text-gray-500 text-sm">{ticket.operatorName}</p>
                                                     </div>
-                                                    <button onClick={() => cancelTicket(ticket.id)} className=" text-sm focus:outline-none ml-auto text-orange-400 hover:text-orange-700">
-                                                        Anulo
-                                                    </button>
                                                 </div>
                                             </div>
                                         </div>

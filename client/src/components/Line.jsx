@@ -2,8 +2,9 @@ import React from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import useTokenRefresh from '../hooks/useTokenRefresh';
+import Success from '../pages/Success';
 
-const Line = ({ onClose, schedule, departureDate, departureTime, arrivalDate, arrivalTime, totalPrice }) => {
+const Line = ({ onClose, schedule, departureDate, departureTime, arrivalDate, arrivalTime, totalPrice, ticket }) => {
     useTokenRefresh();
 
     // Function to handle reservation
@@ -11,7 +12,7 @@ const Line = ({ onClose, schedule, departureDate, departureTime, arrivalDate, ar
         const token = localStorage.getItem('token'); // Retrieve the token from local storage
         const decodedToken = jwtDecode(token);
         const userId = decodedToken['http://schemas.yourapp.com/identity/claims/userid'];
-
+    
         // Check if either token or userId is not found
         if (!token || !userId) {
             console.error('User is not authenticated or user ID is missing.');
@@ -19,7 +20,7 @@ const Line = ({ onClose, schedule, departureDate, departureTime, arrivalDate, ar
             window.location.href = '/authentication'; // Modify the path as per your route settings
             return;
         }
-
+    
         // Confirm reservation with the user
         const confirmReservation = window.confirm('Konfirmo se deshironi te rezervoni bileten.');
         if (confirmReservation) {
@@ -31,21 +32,31 @@ const Line = ({ onClose, schedule, departureDate, departureTime, arrivalDate, ar
                         busScheduleId: schedule.id,
                         userId: userId,
                         dateOfBooking: new Date()
-                    },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
                     }
                 );
                 console.log('Ticket created:', response.data);
-                alert('Keni rezervuar bileten me sukses!');
+                alert('Keni rezervuar bileten, vazhdoni me pagesen!');
+
+                localStorage.setItem('ticketId', response.data.id);
+    
+                // Correctly format the URL for redirection
+                const paymentResponse = await axios.post(`https://localhost:7264/create-checkout-session?id=${response.data.id}`);
+
+                const ticketUrl = paymentResponse.data.url
+                setTimeout(() => {
+                    window.location.href = ticketUrl;
+                }, 2000);
+                onClose();
+                
+                
+                console.log('Ticket created:', response.data);
                 onClose(); // Close the modal after successful reservation
             } catch (error) {
                 console.error('Error creating ticket:', error.response.data);
-                alert('Ndodhi nje gabim gjate rezervimit te biletës.');
+                alert('Ndodhi nje gabim gjate rezervimit te biletÃ«s.');
             }
         }
+
     };
 
     return (

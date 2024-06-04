@@ -38,6 +38,8 @@ import TicketListConductor from './pages/conductor/ticket/TicketListConductor';
 import TicketEditConductor from './pages/conductor/ticket/TicketEditConductor';
 import UserListConductor from './pages/conductor/user/UserListConductor';
 import ScheduleListConductor from './pages/conductor/schedules/ScheduleListConductor';
+import Success from './pages/Success';
+import Cancel from './pages/Cancel';
 
 const App = () => {
 
@@ -81,6 +83,8 @@ const App = () => {
             <Route path="/conductor/tickets/:id/edit" element={<TicketEditConductor />} />
             <Route path="/conductor/users/" element={<UserListConductor />} />
             <Route path="/conductor/schedules/" element={<ScheduleListConductor />} />
+            <Route path="/success" element={<Success/>}></Route>
+            <Route path="/cancel" element={<Cancel/>}></Route>
           </Routes>
         </Router>
     </>
