@@ -20,5 +20,7 @@ namespace server.Entities
 
         public bool IsDeleted { get; set; } = false;
 
+        public bool IsPaid { get; set; } = false;
+
     }
 }

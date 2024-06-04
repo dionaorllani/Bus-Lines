@@ -9,6 +9,7 @@ using server.Mappings;
 using server.Services;
 using server.Services.Imp;
 using System.Text;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -94,7 +95,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IStopService, StopService>();
 
 //Register TokenService
-builder.Services.AddTransient<ITokenService, TokenService>();
+builder.Services.AddTransient<ITokenService, JwtTokenService>();
 
 // Register HttpClient service
 builder.Services.AddHttpClient();
@@ -121,6 +122,8 @@ builder.Services.AddAuthentication(options =>
         ClockSkew = TimeSpan.Zero
     };
 });
+
+StripeConfiguration.ApiKey = configuration["StripeSettings:SecretKey"];
 
 var app = builder.Build();
 

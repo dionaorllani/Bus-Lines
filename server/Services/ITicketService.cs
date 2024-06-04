@@ -11,5 +11,7 @@ namespace server.Services
         public Task<IActionResult> AddTicket(TicketDTO ticketDTO);
         public Task<IActionResult> UpdateTicket(int id, TicketDTO ticketDTO);
         public Task<IActionResult> DeleteTicket(int id);
+        public Task<IActionResult> UpdateSuccessStatus(int id);
+
     }
 }

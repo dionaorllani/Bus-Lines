@@ -6,7 +6,7 @@ using System.Text;
 
 namespace server.Services.Imp
 {
-    public class TokenService : ITokenService
+    public class JwtTokenService : ITokenService
     {
         public string GenerateAccessToken(IEnumerable<Claim> claims)
         {

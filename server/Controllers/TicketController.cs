@@ -50,5 +50,12 @@ namespace server.Controllers
             var result = await _ticketService.DeleteTicket(id);
             return result;
         }
+
+        [HttpPost("{id}")]
+        public async Task<IActionResult> UpdateSuccessStatus(int id)
+        {
+            var result = await _ticketService.UpdateSuccessStatus(id);
+            return result;
+        }
     }
 }

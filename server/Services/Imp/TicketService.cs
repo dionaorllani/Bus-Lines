@@ -91,7 +91,8 @@ namespace server.Services
                 Departure = ticketData.BusSchedule.Departure,
                 Arrival = ticketData.BusSchedule.Arrival,
                 Seat = ticketData.Seat,
-                DateOfBooking = ticketData.DateOfBooking
+                DateOfBooking = ticketData.DateOfBooking,
+                IsPaid = ticketData.IsPaid
             };
 
             // Return result as HTTP 200 OK with ticket details.
@@ -162,7 +163,8 @@ namespace server.Services
                 BusScheduleId = ticketDTO.BusScheduleId,
                 Seat = availableSeats.First(), // Assign the first available seat
                 DateOfBooking = DateTime.Now, // Assuming current date/time for booking
-                IsDeleted = false
+                IsDeleted = false,
+                IsPaid = false
             };
 
             _context.Tickets.Add(ticket);
@@ -175,7 +177,8 @@ namespace server.Services
                 userId = ticket.UserId,
                 busScheduleId = ticket.BusScheduleId,
                 seat = ticket.Seat,
-                dateOfBooking = ticket.DateOfBooking
+                dateOfBooking = ticket.DateOfBooking,
+                isPaid = ticket.IsPaid
             };
 
             return new CreatedAtActionResult(nameof(GetTicket), "Ticket", new { id = ticket.Id }, newResponse);
@@ -270,6 +273,24 @@ namespace server.Services
             await _context.SaveChangesAsync();
 
             return new NoContentResult();
+        }
+
+        public async Task<IActionResult> UpdateSuccessStatus(int id)
+        {
+            var ticket = await _context.Tickets.FindAsync(id);
+
+            if (ticket == null)
+            {
+                return new NotFoundResult();
+            }
+
+            ticket.IsPaid = true;
+
+            _context.Entry(ticket).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return new NoContentResult();
+
         }
     }
 }
