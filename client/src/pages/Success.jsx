@@ -5,7 +5,6 @@ import axios from 'axios';
 const Success = () => {
 
     const ticketId = localStorage.getItem('ticketId');
-    console.log(ticketId);
 
     useEffect(() => {
         isPaid();
@@ -15,6 +14,7 @@ const Success = () => {
         
         try{
             axios.post(`https://localhost:7264/Ticket/${ticketId}`)
+            localStorage.removeItem('ticketId');
         }
             catch(error) {
                 console.error("Error paying ticket:", error);

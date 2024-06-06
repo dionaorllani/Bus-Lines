@@ -8,6 +8,8 @@ const QuestionList = () => {
     useTokenRefresh();
 
     const [userQuestions, setUserQuestions] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     useEffect(() => {
         const fetchUserQuestions = async () => {
@@ -32,6 +34,12 @@ const QuestionList = () => {
             console.error('Error deleting question:', error);
         }
     };
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = userQuestions.slice(indexOfFirstItem, indexOfLastItem);
+
+    const pageCount = Math.ceil(userQuestions.length / itemsPerPage);
 
     return (
         <>
@@ -58,7 +66,7 @@ const QuestionList = () => {
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
-                                {userQuestions.map((question) => (
+                                {currentItems.map((question) => (
                                     <tr key={question.id}>
                                         <td className="px-6 py-4">{question.id}</td>
                                         <td className="px-6 py-4">{question.question}</td>
@@ -75,6 +83,18 @@ const QuestionList = () => {
                                 ))}
                             </tbody>
                         </table>
+                    </div>
+                    <div className="flex justify-center items-center mt-6 pb-8">
+                        {Array.from({ length: pageCount }, (_, i) => (
+                            <button
+                                key={i}
+                                onClick={() => setCurrentPage(i + 1)}
+                                className={`mx-1 px-3 py-1 rounded-lg focus:outline-none ${currentPage === i + 1 ? 'bg-gray-300' : 'bg-gray-200'
+                                    }`}
+                            >
+                                {i + 1}
+                            </button>
+                        ))}
                     </div>
                 </div>
             </div>

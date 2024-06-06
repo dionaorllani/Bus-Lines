@@ -38,7 +38,14 @@ const LogIn = () => {
         localStorage.setItem('token', token);
         localStorage.setItem('refreshToken', refreshToken);
         const decode = jwtDecode(token);
-        window.location.href = decode['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] === "Admin" ? '/admin' : '/';
+        const userRole =  decode['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] /*=== "Admin" ? '/admin' : '/';*/
+        if (userRole === "Admin") {
+            window.location.href = '/admin';
+        } else if (userRole === "Conductor") {
+            window.location.href = '/conductor';
+        } else {
+            window.location.href = '/';
+        }
     };
 
     const validatePassword = (password) => {
