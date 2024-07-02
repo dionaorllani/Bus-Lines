@@ -3,7 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 
 const useTokenRefresh = () => {
-    useEffect(() => {
+    /*useEffect(() => {
         const token = localStorage.getItem('token');
         const refreshToken = localStorage.getItem('refreshToken');
 
@@ -32,7 +32,7 @@ const useTokenRefresh = () => {
                     });
             }
         }
-    }, []);
+    }, []);*/
 };
 
 export default useTokenRefresh;

@@ -30,10 +30,7 @@ namespace server.Services.Imp
 
         public async Task<City> AddCityAsync(CityDTO cityDTO)
         {
-            // Check if city already exists with the same name
             var existingCity = await _context.Cities.FirstOrDefaultAsync(c => c.Name == cityDTO.Name);
-
-            // If city exists and is not deleted, throw an exception
             if (existingCity != null && !existingCity.IsDeleted)
             {
                 throw new ArgumentException("City already exists.");
@@ -47,18 +44,14 @@ namespace server.Services.Imp
                 return existingCity;
             }
 
-            // If city does not exist, create a new City entity from the DTO
             var city = new City
             {
                 Name = cityDTO.Name,
                 IsDeleted = false
             };
 
-            // Add city to context and save changes
             _context.Cities.Add(city);
             await _context.SaveChangesAsync();
-
-            // Return the newly created city
             return city;
         }
 
